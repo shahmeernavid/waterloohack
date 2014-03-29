@@ -12,6 +12,8 @@ import java.net.URL;
 import java.net.URLEncoder;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.sql.Timestamp;
+import java.util.Date;
 import java.util.Scanner;
 
 import org.apache.http.HttpEntity;
@@ -176,6 +178,11 @@ public class MainActivity extends Activity implements LocationListener,
 		});
 	}
 
+	protected static long timedelta(String date, Date now) {
+		return Timestamp.valueOf(date.replace('T', ' ')).getTime()
+				- now.getTime() - now.getTimezoneOffset() * 60 * 1000;
+	}
+
 	private void rebindList(final JSONArray arr) {
 		mSeedList.setAdapter(new BaseAdapter() {
 			@Override
@@ -183,14 +190,24 @@ public class MainActivity extends Activity implements LocationListener,
 				if (convertView == null)
 					convertView = getLayoutInflater().inflate(
 							R.layout.seed_view, null);// XXX parent
-				// doesn't work
-				((ImageView) convertView.findViewById(R.id.content_type))
-						.setImageResource(R.drawable.ic_launcher);
 				final JSONObject obj = arr.optJSONObject(position);
+				int icon = R.drawable.file;
+				String type = obj.optString("content_type");
+				if (type.startsWith("image/"))
+					icon = R.drawable.image;
+				else if (type.startsWith("text/"))
+					icon = R.drawable.message;
+				((ImageView) convertView.findViewById(R.id.content_type))
+						.setImageResource(icon);
 				((TextView) convertView.findViewById(R.id.title)).setText(obj
 						.optString("title"));
-				((TextView) convertView.findViewById(R.id.json)).setText(obj
-						.toString());
+				Date now = new Date();
+				((TextView) convertView.findViewById(R.id.age))
+						.setText(humanizeMillis(-timedelta(
+								obj.optString("created"), now)));
+				((TextView) convertView.findViewById(R.id.expiration))
+						.setText(humanizeMillis(timedelta(
+								obj.optString("expiration"), now)));
 				convertView.setOnClickListener(MainActivity.this);
 				convertView.setTag(obj);
 				return convertView;
@@ -211,6 +228,20 @@ public class MainActivity extends Activity implements LocationListener,
 				return arr.length();
 			}
 		});
+	}
+
+	protected static CharSequence humanizeMillis(long l) {
+		l/=1000*60;
+		if(l<=0)
+			return "< 1 min";
+		int[]rates={60,24,7};
+		String[]names={"hr","day","week"};
+		String unit="min";
+		for(int i=0;i<rates.length&&l>=rates[i];++i){
+			l/=rates[i];
+			unit=names[i];
+		}
+		return l+" "+unit+(l==1?"":"s");
 	}
 
 	@Override
@@ -360,7 +391,9 @@ public class MainActivity extends Activity implements LocationListener,
 						@Override
 						public void run() {
 							try {
-								startActivity(new Intent(Intent.ACTION_VIEW).setDataAndType(Uri.fromFile(outputFile), type));
+								startActivity(new Intent(Intent.ACTION_VIEW)
+										.setDataAndType(
+												Uri.fromFile(outputFile), type));
 							} catch (Exception e) {
 								e.printStackTrace();
 								Toast.makeText(MainActivity.this,
