@@ -85,7 +85,6 @@ class Api(object):
 		for obj_key, obj in copy.deepcopy(d.items()):
 			if obj['expiration'] < now:
 				del d[obj_key]
-			obj['hits'] = 0
 		d.sync()
 if __name__=='__main__':
 	d = shelve.open('uploads.shelve')
