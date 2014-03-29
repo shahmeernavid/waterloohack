@@ -35,7 +35,7 @@
         android:textColor="#b1b1b1" />
 
     <TextView
-        android:id="@+id/bullet"
+        android:id="@+id/bulle1t"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
@@ -49,16 +49,16 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
-        android:layout_toRightOf="@+id/bullet"
+        android:layout_toRightOf="@+id/bullet1"
         android:textAppearance="?android:attr/textAppearanceSmall"
         android:textColor="#b1b1b1" />
 
     <TextView
-        android:id="@+id/bullet"
+        android:id="@+id/bullet2"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
-        android:layout_toRightOf="@+id/age"
+        android:layout_toRightOf="@+id/expiration"
         android:text=" • "
         android:textAppearance="?android:attr/textAppearanceSmall"
         android:textColor="#b1b1b1" />
@@ -68,16 +68,16 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
-        android:layout_toRightOf="@+id/expiration"
+        android:layout_toRightOf="@+id/bullet2"
         android:textAppearance="?android:attr/textAppearanceSmall"
         android:textColor="#b1b1b1" />
 
     <TextView
-        android:id="@+id/bullet"
+        android:id="@+id/bullet3"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
-        android:layout_toRightOf="@+id/age"
+        android:layout_toRightOf="@+id/distance"
         android:text=" m away • "
         android:textAppearance="?android:attr/textAppearanceSmall"
         android:textColor="#b1b1b1" />
@@ -87,16 +87,16 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
-        android:layout_toRightOf="@+id/distance"
+        android:layout_toRightOf="@+id/bullet3"
         android:textAppearance="?android:attr/textAppearanceSmall"
         android:textColor="#b1b1b1" />
 
     <TextView
-        android:id="@+id/bullet"
+        android:id="@+id/viewslabel"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
-        android:layout_toRightOf="@+id/age"
+        android:layout_toRightOf="@+id/hits"
         android:text=" views"
         android:textAppearance="?android:attr/textAppearanceSmall"
         android:textColor="#b1b1b1" />
