@@ -58,7 +58,8 @@ class Api(object):
 		return cherrypy.lib.static.serve_fileobj(io.BytesIO(obj['contents']))
 	@cherrypy.expose
 	@cherrypy.tools.json_out()
-	def list(self, latitude, longitude):
+	def list(self, latitude, longitude, radius='inf'):
+		radius = float(radius)
 		ret = []
 		now = datetime.datetime.utcnow()
 		for obj_key, obj in copy.deepcopy(d.items()):
@@ -69,7 +70,8 @@ class Api(object):
 			obj['distance'] = distance(float(latitude), float(longitude), obj['latitude'], obj['longitude'])
 			obj['key'] = obj_key[4:]
 			del obj['contents']
-			ret.append(obj)
+			if obj['distance'] <= radius:
+				ret.append(obj)
 		ret.sort(key=lambda obj: obj['distance'])
 		return ret
 	@cherrypy.expose

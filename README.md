@@ -40,7 +40,8 @@ serve anything if password is incorrect.
 list
 ==
 
-Generates a JSON-formatted list of metadata for all unexpired items. Each item in the list contains the
+Generates a JSON-formatted list of metadata for all unexpired items within the given radius in m.
+Each item in the list contains the
 following fields:
 
 * **filename**: the original filename of the uploaded file
@@ -63,14 +64,15 @@ following fields:
 
 The resulting list is sorted by distance from the given coordinates, in ascending order.
 
-Filter faraway items on the client's end.
-
 Parameters
 --
 
 * **latitude**: user's current latitude
 
 * **longitude**: user's current longitude
+
+* **radius** (optional): radius (m) to search for items in. All items outside the given radius are not returned.
+Set to infinity by default.
 
 gc
 ==
