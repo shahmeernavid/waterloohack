@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:background="#232525"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
@@ -26,6 +27,7 @@
     </EditText>
 
     <Spinner
+        android:textColor="#eeeeee"
         android:id="@+id/expiration"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -54,6 +56,8 @@
 
     <Button
         android:id="@+id/plant"
+        android:background="#418d43"
+        android:textColor="#ffffff"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
