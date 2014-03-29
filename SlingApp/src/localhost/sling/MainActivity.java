@@ -1,10 +1,25 @@
 package localhost.sling;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.io.UnsupportedEncodingException;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.net.URLEncoder;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.Scanner;
 
+import org.apache.http.HttpEntity;
+import org.apache.http.HttpResponse;
+import org.apache.http.client.ClientProtocolException;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.impl.client.DefaultHttpClient;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -12,17 +27,19 @@ import org.json.JSONObject;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
+import android.net.Uri;
 import android.os.Bundle;
+import android.app.ActionBar;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.util.Log;
-import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
+import android.webkit.MimeTypeMap;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.ListView;
@@ -30,7 +47,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 public class MainActivity extends Activity implements LocationListener,
-		Runnable, OnClickListener {
+		Runnable, OnClickListener, DialogInterface.OnClickListener {
 	ListView mSeedList;
 	LocationManager mLocationManager;
 	URL mBaseurl;
@@ -150,7 +167,7 @@ public class MainActivity extends Activity implements LocationListener,
 			e.printStackTrace();
 			return;
 		}
-		Log.v("SlingApp", "got json " + arr);
+		// Log.v("SlingApp", "got json " + arr);
 		runOnUiThread(new Runnable() {
 			@Override
 			public void run() {
@@ -164,9 +181,9 @@ public class MainActivity extends Activity implements LocationListener,
 			@Override
 			public View getView(int position, View convertView, ViewGroup parent) {
 				if (convertView == null)
-					convertView = LayoutInflater.from(MainActivity.this)
-							.inflate(R.layout.seed_view, null);// XXX parent
-																// doesn't work
+					convertView = getLayoutInflater().inflate(
+							R.layout.seed_view, null);// XXX parent
+				// doesn't work
 				((ImageView) convertView.findViewById(R.id.content_type))
 						.setImageResource(R.drawable.ic_launcher);
 				final JSONObject obj = arr.optJSONObject(position);
@@ -214,8 +231,152 @@ public class MainActivity extends Activity implements LocationListener,
 
 	@Override
 	public void onClick(View arg0) {
-		final JSONObject obj=(JSONObject) arg0.getTag();
-		
+		final JSONObject obj = (JSONObject) arg0.getTag();
+		final String key = obj.optString("key"), type = obj
+				.optString("content_type"), hash = obj.opt("password") instanceof String ? obj
+				.optString("password") : null;
+		if (hash == null) {
+			fetchSeed(type, key, null);
+			return;
+		}
+		String question = obj.opt("question") instanceof String ? obj
+				.optString("question") : null;
+		final View prompt = getLayoutInflater().inflate(
+				R.layout.password_prompt, null);
+		((TextView) prompt.findViewById(R.id.prompt))
+				.setText(question == null ? "password" : question);
+		final TextView password = (TextView) prompt.findViewById(R.id.password);
+		final AlertDialog dialog = new AlertDialog.Builder(this)
+				.setView(prompt)
+				.setTitle(question == null ? "password" : "question")
+				.setPositiveButton("ok", null)
+				.setNegativeButton("cancel", this).create();
+		dialog.show();
+		dialog.getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener(
+				new OnClickListener() {
+					@Override
+					public void onClick(View arg0) {
+						final String passwordText = password.getText()
+								.toString();
+						final MessageDigest md;
+						try {
+							md = MessageDigest.getInstance("SHA-1");
+						} catch (NoSuchAlgorithmException e) {
+							e.printStackTrace();
+							finish();
+							return;
+						}
+						md.update("NSGbUvrdqwqHYFAQ".getBytes());
+						final byte[] digest = md.digest(passwordText.getBytes());
+						for (int i = 0; i < digest.length; i++)
+							if (Integer.parseInt(
+									hash.substring(2 * i, 2 * (i + 1)), 16) != (0xff & digest[i])) {
+								Toast.makeText(MainActivity.this,
+										"bad password", Toast.LENGTH_SHORT)
+										.show();
+								return;
+							}
+						fetchSeed(type, key, passwordText);
+						dialog.dismiss();
+					}
+				});
+	}
+
+	String encodeURIComponent(String component) {
+		try {
+			return URLEncoder.encode(component, "UTF-8");
+		} catch (UnsupportedEncodingException e) {
+			e.printStackTrace();
+			finish();
+			return "";
+		}
+	}
+
+	private void fetchSeed(final String type, String key, String password) {
+		final String objPath = mBaseurl
+				+ "get?key="
+				+ encodeURIComponent(key)
+				+ (password == null ? "" : "&password="
+						+ encodeURIComponent(password));
+		Log.v("SlingApp", "objPath = " + objPath);
+
+		String ext = MimeTypeMap.getSingleton().getExtensionFromMimeType(type);
+		final String basename = ext == null ? key : key + "." + ext;
+		new Thread() {
+			public void run() {
+				HttpClient httpclient = new DefaultHttpClient();
+				HttpGet httpget = new HttpGet(objPath);
+				final HttpResponse response;
+				try {
+					response = httpclient.execute(httpget);
+				} catch (ClientProtocolException e) {
+					e.printStackTrace();
+					return;
+				} catch (IOException e) {
+					e.printStackTrace();
+					return;
+				}
+				HttpEntity entity = response.getEntity();
+				if (entity != null) {
+					final File outputFile = new File(getFilesDir(), basename);
+					InputStream inputStream = null;
+					FileOutputStream fos = null;
+					try {
+						try {
+							fos = new FileOutputStream(outputFile);// openFileOutput(basename,
+																	// MODE_WORLD_READABLE);//XXX
+						} catch (FileNotFoundException e) {
+							e.printStackTrace();
+							return;
+						}
+						inputStream = entity.getContent();
+						byte[] buf = new byte[1024 * 8];
+						int extent;
+						while ((extent = inputStream.read(buf)) != -1)
+							fos.write(buf, 0, extent);
+					} catch (IllegalStateException e) {
+						e.printStackTrace();
+						return;
+					} catch (IOException e) {
+						e.printStackTrace();
+						return;
+					} finally {
+						try {
+							if (inputStream != null)
+								inputStream.close();
+						} catch (IOException e) {
+							e.printStackTrace();
+						}
+						try {
+							if (fos != null)
+								fos.close();
+						} catch (IOException e) {
+							e.printStackTrace();
+						}
+					}
+					Log.v("SlingApp", "saved to " + outputFile);
+					runOnUiThread(new Runnable() {
+
+						@Override
+						public void run() {
+							try {
+								startActivity(new Intent(Intent.ACTION_VIEW).setDataAndType(Uri.fromFile(outputFile), type));
+							} catch (Exception e) {
+								e.printStackTrace();
+								Toast.makeText(MainActivity.this,
+										"cannot open", Toast.LENGTH_LONG)
+										.show();
+							}
+						}
+					});
+				}
+			};
+		}.start();
+	}
+
+	@Override
+	public void onClick(DialogInterface dialog, int which) {
+		dialog.dismiss();
 	}
 
 }
