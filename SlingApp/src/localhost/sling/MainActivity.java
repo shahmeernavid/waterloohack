@@ -225,6 +225,10 @@ public class MainActivity extends Activity implements LocationListener,
 				((TextView) convertView.findViewById(R.id.expiration))
 						.setText(humanizeMillis(timedelta(
 								obj.optString("expiration"), now)));
+				((TextView) convertView.findViewById(R.id.distance))
+				.setText(String.valueOf((int)Math.ceil(obj.optDouble("distance"))));
+				((TextView) convertView.findViewById(R.id.hits))
+				.setText(String.valueOf(obj.optInt("hits")));
 				convertView.setTag(obj);
 				return convertView;
 			}

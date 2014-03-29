@@ -53,6 +53,24 @@
         android:textAppearance="?android:attr/textAppearanceSmall"
         android:textColor="#b1b1b1" />
 
+    <TextView
+        android:id="@+id/distance"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_toRightOf="@+id/expiration"
+        android:textAppearance="?android:attr/textAppearanceSmall"
+        android:textColor="#b1b1b1" />
+
+    <TextView
+        android:id="@+id/hits"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_toRightOf="@+id/distance"
+        android:textAppearance="?android:attr/textAppearanceSmall"
+        android:textColor="#b1b1b1" />
+
     <ImageView
         android:id="@+id/authentication"
         android:layout_width="wrap_content"
