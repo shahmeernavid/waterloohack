@@ -23,7 +23,8 @@ class Api(object):
 	def plant(self, seed, latitude, longitude, title, expiration, password=None, question=None):
 		expiration = datetime.datetime.utcnow()+datetime.timedelta(seconds=max(0, min(3600*24*7*2, float(expiration))))
 		while True:
-			obj_key = 'obj_%s'%''.join(random.choice(string.letters+string.digits) for _ in xrange(16))
+			key = ''.join(random.choice(string.letters+string.digits) for _ in xrange(16))
+			obj_key = 'obj_%s'%key
 			if obj_key not in d:
 				break
 		d[obj_key] = {
@@ -34,14 +35,14 @@ class Api(object):
 			'longitude' : float(longitude),
 			'title' : title,
 			'expiration' : expiration,
-			'password' : digest(password),
+			'password' : None if password is None else digest(password),
 			'question' : question,
 		}
 		d.sync()
-		return key
+		return obj_key[4:]
 	@cherrypy.expose
 	def get(self, key, password=None):
-		obj = d['obj_%s'%key]
+		obj = d['obj_%s'%str(key)]
 		if obj['expiration'] < datetime.datetime.utcnow():
 			raise KeyError
 		if obj['password'] is not None and obj['password'] != digest(password):
