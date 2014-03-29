@@ -52,6 +52,7 @@ import android.widget.Toast;
 
 public class MainActivity extends Activity implements LocationListener,
 		Runnable, DialogInterface.OnClickListener {
+	public static final String API_BASE = "http://linux024.student.cs.uwaterloo.ca:40080/";
 	ListView mSeedList;
 	LocationManager mLocationManager;
 	URL mBaseurl;
@@ -64,7 +65,7 @@ public class MainActivity extends Activity implements LocationListener,
 		mSeedList = (ListView) findViewById(R.id.seed_list);
 		mLocationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
 		try {
-			mBaseurl = new URL("http://linux024.student.cs.uwaterloo.ca:40080/");
+			mBaseurl = new URL(API_BASE);
 		} catch (MalformedURLException e) {
 			e.printStackTrace();
 			finish();
@@ -374,10 +375,7 @@ public class MainActivity extends Activity implements LocationListener,
 							return;
 						}
 						inputStream = entity.getContent();
-						byte[] buf = new byte[1024 * 8];
-						int extent;
-						while ((extent = inputStream.read(buf)) != -1)
-							fos.write(buf, 0, extent);
+						copyStream(inputStream, fos);
 					} catch (IllegalStateException e) {
 						e.printStackTrace();
 						return;
@@ -423,6 +421,14 @@ public class MainActivity extends Activity implements LocationListener,
 	@Override
 	public void onClick(DialogInterface dialog, int which) {
 		dialog.dismiss();
+	}
+
+	public static void copyStream(InputStream inputStream, OutputStream fos)
+			throws IOException {
+		byte[] buf = new byte[1024 * 8];
+		int extent;
+		while ((extent = inputStream.read(buf)) != -1)
+			fos.write(buf, 0, extent);
 	}
 
 }
