@@ -25,7 +25,7 @@
         android:textAppearance="?android:attr/textAppearanceMedium" />
 
     <TextView
-        android:id="@+id/expiration"
+        android:id="@+id/age"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
@@ -39,20 +39,20 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
-        android:layout_toRightOf="@+id/expiration"
-        android:text=" • "
+        android:layout_toRightOf="@+id/age"
+        android:text=" • gone in "
         android:textAppearance="?android:attr/textAppearanceSmall"
         android:textColor="#b1b1b1" />
 
     <TextView
-        android:id="@+id/age"
+        android:id="@+id/expiration"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
         android:layout_toRightOf="@+id/bullet"
         android:textAppearance="?android:attr/textAppearanceSmall"
         android:textColor="#b1b1b1" />
-    
+
     <ImageView
         android:id="@+id/authentication"
         android:layout_width="wrap_content"
@@ -60,7 +60,7 @@
         android:layout_alignParentRight="true"
         android:layout_centerInParent="true"
         android:layout_marginRight="5dp"
-        android:src="@drawable/element_lock"
-        android:alpha=".25"/>
+        android:alpha=".25"
+        android:src="@drawable/element_lock" />
 
 </RelativeLayout>
