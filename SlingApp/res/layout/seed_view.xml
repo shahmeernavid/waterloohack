@@ -35,7 +35,7 @@
         android:textColor="#b1b1b1" />
 
     <TextView
-        android:id="@+id/bulle1t"
+        android:id="@+id/bullet1"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
