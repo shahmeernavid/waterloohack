@@ -21,13 +21,15 @@ class Api(object):
 	@cherrypy.tools.allow(methods=('POST',))
 	@cherrypy.tools.json_out()
 	def plant(self, seed, latitude, longitude, title, expiration, password=None, question=None):
-		expiration = datetime.datetime.utcnow()+datetime.timedelta(seconds=max(0, min(3600*24*7*2, float(expiration))))
+		now = datetime.datetime.utcnow()
+		expiration = now+datetime.timedelta(seconds=max(0, min(3600*24*7*2, float(expiration))))
 		while True:
 			key = ''.join(random.choice(string.letters+string.digits) for _ in xrange(16))
 			obj_key = 'obj_%s'%key
 			if obj_key not in d:
 				break
 		d[obj_key] = {
+			'created' : now,
 			'filename' : seed.filename,
 			'contents' : seed.file.read(),
 			'content_type' : str(seed.content_type),
