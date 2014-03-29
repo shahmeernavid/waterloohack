@@ -78,7 +78,7 @@
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
         android:layout_toRightOf="@+id/distance"
-        android:text=" m away • "
+        android:text=" m away"
         android:textAppearance="?android:attr/textAppearanceSmall"
         android:textColor="#b1b1b1" />
         
@@ -86,17 +86,17 @@
         android:id="@+id/hits"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:layout_toRightOf="@+id/bullet3"
+        android:layout_alignParentTop="true"
+        android:layout_toLeftOf="@+id/viewslabel"
         android:textAppearance="?android:attr/textAppearanceSmall"
         android:textColor="#b1b1b1" />
 
     <TextView
         android:id="@+id/viewslabel"
         android:layout_width="wrap_content"
-        android:layout_height="match_parent"
-        android:layout_alignParentBottom="true"
-        android:layout_toRightOf="@+id/hits"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentRight="true"
         android:text=" views"
         android:textAppearance="?android:attr/textAppearanceSmall"
         android:textColor="#b1b1b1" />
@@ -106,7 +106,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentRight="true"
-        android:layout_centerInParent="true"
+        android:layout_alignParentBottom="true"
         android:layout_marginRight="5dp"
         android:alpha=".25"
         android:src="@drawable/element_lock" />
