@@ -52,5 +52,15 @@
         android:layout_toRightOf="@+id/bullet"
         android:textAppearance="?android:attr/textAppearanceSmall"
         android:textColor="#b1b1b1" />
+    
+    <ImageView
+        android:id="@+id/authentication"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
+        android:layout_centerInParent="true"
+        android:layout_marginRight="5dp"
+        android:src="@drawable/element_lock"
+        android:alpha=".25"/>
 
 </RelativeLayout>

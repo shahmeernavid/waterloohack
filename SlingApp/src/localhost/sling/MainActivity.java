@@ -203,6 +203,9 @@ public class MainActivity extends Activity implements LocationListener,
 					icon = R.drawable.message;
 				((ImageView) convertView.findViewById(R.id.content_type))
 						.setImageResource(icon);
+				((ImageView) convertView.findViewById(R.id.authentication)).setVisibility(obj
+						.opt("password") instanceof String ? View.VISIBLE
+						: View.GONE);
 				((TextView) convertView.findViewById(R.id.title)).setText(obj
 						.optString("title"));
 				Date now = new Date();
