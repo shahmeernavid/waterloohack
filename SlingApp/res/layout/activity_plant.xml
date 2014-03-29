@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:background="#232525"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
@@ -8,20 +9,22 @@
     <ImageView
         android:id="@+id/content_type"
         android:layout_width="150dp"
-        android:layout_height="150dp"
+        android:layout_height="164dp"
         android:layout_alignParentTop="true"
         android:layout_centerHorizontal="true"
         android:src="@drawable/message" />
 
     <EditText
         android:id="@+id/title"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_below="@id/content_type"
         android:layout_centerHorizontal="true"
-        android:ems="10" 
-        android:hint="Sling title">
-
+        android:layout_margin="5dp"
+        android:background="@drawable/text_field"
+        android:ems="10"
+        android:hint="Sling title"
+        android:padding="5dp">
         <requestFocus />
     </EditText>
 
@@ -31,35 +34,47 @@
         android:layout_height="wrap_content"
         android:layout_below="@id/title"
         android:layout_centerHorizontal="true"
-        android:entries="@array/expiration_array" />
+        android:layout_margin="5dp"
+        android:entries="@array/expiration_array"
+        android:background="@drawable/text_field"
+        android:textColor="@drawable/color_selector"
+        />
 
     <EditText
         android:id="@+id/password"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_below="@id/expiration"
         android:layout_centerHorizontal="true"
+        android:layout_margin="5dp"
         android:ems="10"
+        android:hint="password (optional)"
         android:inputType="textPassword"
-        android:hint="password (optional)" />
+        android:background="@drawable/text_field_transparent"
+        android:padding="5dp"/>
 
     <EditText
         android:id="@+id/question"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_below="@id/password"
         android:layout_centerHorizontal="true"
         android:visibility="gone"
+        android:layout_margin="5dp"
         android:ems="10"
-        android:hint="question (optional)" />
+        android:hint="question (optional)"
+        android:background="@drawable/text_field_transparent"
+        android:padding="5dp"/>
 
     <Button
         android:id="@+id/plant"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
         android:layout_centerHorizontal="true"
-        android:text="Sling"
+        android:background="@drawable/submit_sling_button"
+        android:text="sling"
+        android:textColor="#ffffff"
         android:enabled="false"/>
 
 </RelativeLayout>
