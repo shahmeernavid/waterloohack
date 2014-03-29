@@ -49,6 +49,7 @@
         android:layout_height="wrap_content"
         android:layout_below="@id/password"
         android:layout_centerHorizontal="true"
+        android:visibility="gone"
         android:ems="10"
         android:hint="question (optional)" />
 
@@ -58,6 +59,7 @@
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
         android:layout_centerHorizontal="true"
-        android:text="Sling" />
+        android:text="Sling"
+        android:enabled="false"/>
 
 </RelativeLayout>
