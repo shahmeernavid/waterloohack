@@ -43,9 +43,19 @@ list
 Generates a JSON-formatted list of metadata for all unexpired items. Each item in the list contains the
 following fields:
 
-* **expiration**: the expiration date of the item, in ISO format (YYYY-MM-DD)
+* **filename**: the original filename of the uploaded file
 
-* **created**: the date that the item was created, in ISO format (YYYY-MM-DD)
+* **content_type**: the MIME/Media type of the original file
+
+* **latitude**: the latitude of the item
+
+* **longitude**: the longitude of the item
+
+* **title**: the user-assigned title associated with the item
+
+* **expiration**: the expiration date of the item, in ISO format (YYYY-MM-DDTHH:MM:SS.mmmmmm)
+
+* **created**: the date that the item was created, in ISO format (YYYY-MM-DDTHH:MM:SS.mmmmmm)
 
 * **distance**: the distance between the coordinate at `(latitude, longitude)` and the current item, in km
 
