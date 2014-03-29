@@ -21,7 +21,7 @@
         android:layout_below="@id/content_type"
         android:layout_centerHorizontal="true"
         android:layout_margin="5dp"
-        android:background="@drawable/textfield"
+        android:background="@drawable/text_field"
         android:ems="10"
         android:hint="Sling title"
         android:padding="5dp">
@@ -36,8 +36,9 @@
         android:layout_centerHorizontal="true"
         android:layout_margin="5dp"
         android:entries="@array/expiration_array"
-        android:textColor="#eeeeee"
-        android:background="@drawable/textfield"/>
+        android:background="@drawable/text_field"
+        android:textColor="@drawable/color_selector"
+        />
 
     <EditText
         android:id="@+id/password"
@@ -49,7 +50,7 @@
         android:ems="10"
         android:hint="password (optional)"
         android:inputType="textPassword"
-        android:background="@drawable/textfieldtransparent"
+        android:background="@drawable/text_field_transparent"
         android:padding="5dp"/>
 
     <EditText
@@ -61,7 +62,7 @@
         android:layout_margin="5dp"
         android:ems="10"
         android:hint="question (optional)"
-        android:background="@drawable/textfieldtransparent"
+        android:background="@drawable/text_field_transparent"
         android:padding="5dp"/>
 
     <Button
@@ -70,7 +71,7 @@
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
         android:layout_centerHorizontal="true"
-        android:background="@drawable/submitslingbutton"
+        android:background="@drawable/submit_sling_button"
         android:text="sling"
         android:textColor="#ffffff" />
 
