@@ -43,16 +43,21 @@ class Api(object):
 			'expiration' : expiration,
 			'password' : None if password is None else digest(password),
 			'question' : question,
+			'hits' : 0,
 		}
 		d.sync()
 		return obj_key[4:]
 	@cherrypy.expose
 	def get(self, key, password=None):
-		obj = d['obj_%s'%str(key)]
+		obj_key = 'obj_%s'%str(key)
+		obj = d[obj_key]
 		if obj['expiration'] < datetime.datetime.utcnow():
 			raise KeyError
 		if obj['password'] is not None and obj['password'] != digest(password):
 			raise ValueError
+		obj['hits'] += 1
+		d[obj_key] = obj
+		d.sync()
 		cherrypy.response.headers['Content-Type'] = obj['content_type']
 		cherrypy.response.headers['Content-Disposition'] = 'inline; filename="'+obj['filename'].replace('\\','\\\\').replace('"','\\"')+'"'
 		return cherrypy.lib.static.serve_fileobj(io.BytesIO(obj['contents']))
@@ -80,6 +85,7 @@ class Api(object):
 		for obj_key, obj in copy.deepcopy(d.items()):
 			if obj['expiration'] < now:
 				del d[obj_key]
+			obj['hits'] = 0
 		d.sync()
 if __name__=='__main__':
 	d = shelve.open('uploads.shelve')
