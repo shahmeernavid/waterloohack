@@ -29,7 +29,8 @@
         <activity
             android:name="localhost.sling.PlantActivity"
             android:label="Sling here"
-            android:screenOrientation="portrait" >
+            android:screenOrientation="portrait"
+            android:theme="@android:style/Theme.Black" >
             <intent-filter>
                 <action android:name="android.intent.action.SEND" />
 
