@@ -38,6 +38,7 @@
         android:entries="@array/expiration_array"
         android:background="@drawable/text_field"
         android:textColor="@drawable/color_selector"
+        android:padding="15dp"
         />
 
     <EditText
@@ -73,6 +74,7 @@
         android:layout_alignParentBottom="true"
         android:layout_centerHorizontal="true"
         android:background="@drawable/submit_sling_button"
+        android:padding="25dp"
         android:text="sling"
         android:textColor="#ffffff"
         android:enabled="false"/>
