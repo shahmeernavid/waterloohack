@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="expiration_array">
+        <item>10 min</item>
+        <item>1 hr</item>
+        <item>1 day</item>
+        <item>1 week</item>
+        <item>2 weeks</item>
+    </string-array>
+</resources>
