@@ -59,6 +59,7 @@
         android:layout_height="wrap_content"
         android:layout_below="@id/password"
         android:layout_centerHorizontal="true"
+        android:visibility="gone"
         android:layout_margin="5dp"
         android:ems="10"
         android:hint="question (optional)"
@@ -73,6 +74,7 @@
         android:layout_centerHorizontal="true"
         android:background="@drawable/submit_sling_button"
         android:text="sling"
-        android:textColor="#ffffff" />
+        android:textColor="#ffffff"
+        android:enabled="false"/>
 
 </RelativeLayout>

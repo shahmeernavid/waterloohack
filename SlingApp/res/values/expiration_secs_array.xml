@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <integer-array name="expiration_secs_array">
+        <item>600</item>
+        <item>3600</item>
+        <item>86400</item>
+        <item>604800</item>
+        <item>1209600</item>
+    </integer-array>
+</resources>

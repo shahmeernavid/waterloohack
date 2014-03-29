@@ -34,6 +34,7 @@ import android.os.Bundle;
 import android.app.ActionBar;
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.util.Log;
@@ -52,24 +53,29 @@ import android.widget.Toast;
 
 public class MainActivity extends Activity implements LocationListener,
 		Runnable, DialogInterface.OnClickListener {
-	public static final String API_BASE = "http://linux024.student.cs.uwaterloo.ca:40080/";
+	public static final URL BASEURL;
+	static {
+		URL u = null;
+		try {
+			u = new URL("http://linux024.student.cs.uwaterloo.ca:40080/");
+		} catch (MalformedURLException e) {
+			e.printStackTrace();
+			assert false;
+		}
+		BASEURL = u;
+	}
 	ListView mSeedList;
 	LocationManager mLocationManager;
-	URL mBaseurl;
 	double mLat, mLon;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+		if (BASEURL == null)
+			finish();
 		setContentView(R.layout.activity_main);
 		mSeedList = (ListView) findViewById(R.id.seed_list);
 		mLocationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
-		try {
-			mBaseurl = new URL(API_BASE);
-		} catch (MalformedURLException e) {
-			e.printStackTrace();
-			finish();
-		}
 	}
 
 	@Override
@@ -79,16 +85,21 @@ public class MainActivity extends Activity implements LocationListener,
 	}
 
 	private void ensureGps() {
+		ensureGps(this, mLocationManager, this);
+	}
+
+	public static void ensureGps(final Context ctx,
+			LocationManager mLocationManager, LocationListener ll) {
 		Location loc = null;
 		if (mLocationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
 			mLocationManager.requestLocationUpdates(
-					LocationManager.GPS_PROVIDER, 5000, 10, this);
+					LocationManager.GPS_PROVIDER, 5000, 10, ll);
 			loc = mLocationManager
 					.getLastKnownLocation(LocationManager.GPS_PROVIDER);
 			if (loc != null)
-				onLocationChanged(loc);// XXX
+				ll.onLocationChanged(loc);// XXX
 		} else
-			new AlertDialog.Builder(this)
+			new AlertDialog.Builder(ctx)
 					.setMessage("gps?")
 					.setCancelable(false)
 					.setPositiveButton("ok",
@@ -96,7 +107,7 @@ public class MainActivity extends Activity implements LocationListener,
 								public void onClick(
 										final DialogInterface dialog,
 										final int id) {
-									startActivity(new Intent(
+									ctx.startActivity(new Intent(
 											android.provider.Settings.ACTION_LOCATION_SOURCE_SETTINGS));
 								}
 							})
@@ -106,8 +117,7 @@ public class MainActivity extends Activity implements LocationListener,
 										final DialogInterface dialog,
 										final int id) {
 									dialog.cancel();
-									Toast.makeText(MainActivity.this,
-											"maybe next time",
+									Toast.makeText(ctx, "maybe next time",
 											Toast.LENGTH_LONG).show();
 								}
 							}).create().show();
@@ -115,11 +125,11 @@ public class MainActivity extends Activity implements LocationListener,
 				&& mLocationManager
 						.isProviderEnabled(LocationManager.NETWORK_PROVIDER)) {
 			mLocationManager.requestLocationUpdates(
-					LocationManager.NETWORK_PROVIDER, 5000, 10, this);
+					LocationManager.NETWORK_PROVIDER, 5000, 10, ll);
 			loc = mLocationManager
 					.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
 			if (loc != null)
-				onLocationChanged(loc);
+				ll.onLocationChanged(loc);
 			else
 				Log.v("SlingApp", "no gps fix");
 		}
@@ -146,8 +156,7 @@ public class MainActivity extends Activity implements LocationListener,
 	public void run() {
 		URL u;
 		try {
-			u = new URL(mBaseurl, "list?latitude=" + mLat + "&longitude="
-					+ mLon);
+			u = new URL(BASEURL, "list?latitude=" + mLat + "&longitude=" + mLon);
 		} catch (MalformedURLException e) {
 			e.printStackTrace();
 			finish();
@@ -338,7 +347,7 @@ public class MainActivity extends Activity implements LocationListener,
 	}
 
 	private void fetchSeed(final String type, String key, String password) {
-		final String objPath = mBaseurl
+		final String objPath = BASEURL
 				+ "get?key="
 				+ encodeURIComponent(key)
 				+ (password == null ? "" : "&password="
@@ -368,8 +377,7 @@ public class MainActivity extends Activity implements LocationListener,
 					FileOutputStream fos = null;
 					try {
 						try {
-							fos = new FileOutputStream(outputFile);// openFileOutput(basename,
-																	// MODE_WORLD_READABLE);//XXX
+							fos = openFileOutput(basename, MODE_WORLD_READABLE);
 						} catch (FileNotFoundException e) {
 							e.printStackTrace();
 							return;
@@ -402,9 +410,10 @@ public class MainActivity extends Activity implements LocationListener,
 						@Override
 						public void run() {
 							try {
+								final Uri uri = Uri.fromFile(outputFile);
 								startActivity(new Intent(Intent.ACTION_VIEW)
-										.setDataAndType(
-												Uri.fromFile(outputFile), type));
+										.setDataAndType(uri, type).putExtra(
+												Intent.EXTRA_STREAM, uri));
 							} catch (Exception e) {
 								e.printStackTrace();
 								Toast.makeText(MainActivity.this,
