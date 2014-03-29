@@ -30,7 +30,7 @@
             android:name="localhost.sling.PlantActivity"
             android:label="Sling here"
             android:screenOrientation="portrait"
-            android:theme="@android:style/Theme.Black" >
+            android:theme="@style/AppTheme" >
             <intent-filter>
                 <action android:name="android.intent.action.SEND" />
 
