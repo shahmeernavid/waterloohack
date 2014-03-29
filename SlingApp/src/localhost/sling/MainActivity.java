@@ -42,6 +42,8 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.webkit.MimeTypeMap;
+import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemClickListener;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.ListView;
@@ -49,7 +51,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 public class MainActivity extends Activity implements LocationListener,
-		Runnable, OnClickListener, DialogInterface.OnClickListener {
+		Runnable, DialogInterface.OnClickListener {
 	ListView mSeedList;
 	LocationManager mLocationManager;
 	URL mBaseurl;
@@ -124,8 +126,10 @@ public class MainActivity extends Activity implements LocationListener,
 
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
+		if (true)
+			return false;// XXX
 		// Inflate the menu; this adds items to the action bar if it is present.
-		getMenuInflater().inflate(R.menu.main, menu); // XXX default
+		getMenuInflater().inflate(R.menu.main, menu);
 		return true;
 	}
 
@@ -208,7 +212,6 @@ public class MainActivity extends Activity implements LocationListener,
 				((TextView) convertView.findViewById(R.id.expiration))
 						.setText(humanizeMillis(timedelta(
 								obj.optString("expiration"), now)));
-				convertView.setOnClickListener(MainActivity.this);
 				convertView.setTag(obj);
 				return convertView;
 			}
@@ -228,20 +231,80 @@ public class MainActivity extends Activity implements LocationListener,
 				return arr.length();
 			}
 		});
+		mSeedList.setOnItemClickListener(new OnItemClickListener() {
+			@Override
+			public void onItemClick(AdapterView<?> parent, View arg0,
+					int position, long id) {
+				// arg0.setSelected(true);
+				final JSONObject obj = (JSONObject) arg0.getTag();
+				final String key = obj.optString("key"), type = obj
+						.optString("content_type"), hash = obj.opt("password") instanceof String ? obj
+						.optString("password") : null;
+				if (hash == null) {
+					fetchSeed(type, key, null);
+					return;
+				}
+				String question = obj.opt("question") instanceof String ? obj
+						.optString("question") : null;
+				final View prompt = getLayoutInflater().inflate(
+						R.layout.password_prompt, null);
+				((TextView) prompt.findViewById(R.id.prompt))
+						.setText(question == null ? "password" : question);
+				final TextView password = (TextView) prompt
+						.findViewById(R.id.password);
+				final AlertDialog dialog = new AlertDialog.Builder(
+						MainActivity.this).setView(prompt)
+						.setTitle(question == null ? "password" : "question")
+						.setPositiveButton("ok", null)
+						.setNegativeButton("cancel", MainActivity.this)
+						.create();
+				dialog.show();
+				dialog.getButton(AlertDialog.BUTTON_POSITIVE)
+						.setOnClickListener(new OnClickListener() {
+							@Override
+							public void onClick(View arg0) {
+								final String passwordText = password.getText()
+										.toString();
+								final MessageDigest md;
+								try {
+									md = MessageDigest.getInstance("SHA-1");
+								} catch (NoSuchAlgorithmException e) {
+									e.printStackTrace();
+									finish();
+									return;
+								}
+								md.update("NSGbUvrdqwqHYFAQ".getBytes());
+								final byte[] digest = md.digest(passwordText
+										.getBytes());
+								for (int i = 0; i < digest.length; i++)
+									if (Integer.parseInt(
+											hash.substring(2 * i, 2 * (i + 1)),
+											16) != (0xff & digest[i])) {
+										Toast.makeText(MainActivity.this,
+												"bad password",
+												Toast.LENGTH_SHORT).show();
+										return;
+									}
+								fetchSeed(type, key, passwordText);
+								dialog.dismiss();
+							}
+						});
+			}
+		});
 	}
 
 	protected static CharSequence humanizeMillis(long l) {
-		l/=1000*60;
-		if(l<=0)
+		l /= 1000 * 60;
+		if (l <= 0)
 			return "< 1 min";
-		int[]rates={60,24,7};
-		String[]names={"hr","day","week"};
-		String unit="min";
-		for(int i=0;i<rates.length&&l>=rates[i];++i){
-			l/=rates[i];
-			unit=names[i];
+		int[] rates = { 60, 24, 7 };
+		String[] names = { "hr", "day", "week" };
+		String unit = "min";
+		for (int i = 0; i < rates.length && l >= rates[i]; ++i) {
+			l /= rates[i];
+			unit = names[i];
 		}
-		return l+" "+unit+(l==1?"":"s");
+		return l + " " + unit + (l == 1 ? "" : "s");
 	}
 
 	@Override
@@ -258,59 +321,6 @@ public class MainActivity extends Activity implements LocationListener,
 	public void onStatusChanged(String provider, int status, Bundle extras) {
 		// TODO Auto-generated method stub
 
-	}
-
-	@Override
-	public void onClick(View arg0) {
-		final JSONObject obj = (JSONObject) arg0.getTag();
-		final String key = obj.optString("key"), type = obj
-				.optString("content_type"), hash = obj.opt("password") instanceof String ? obj
-				.optString("password") : null;
-		if (hash == null) {
-			fetchSeed(type, key, null);
-			return;
-		}
-		String question = obj.opt("question") instanceof String ? obj
-				.optString("question") : null;
-		final View prompt = getLayoutInflater().inflate(
-				R.layout.password_prompt, null);
-		((TextView) prompt.findViewById(R.id.prompt))
-				.setText(question == null ? "password" : question);
-		final TextView password = (TextView) prompt.findViewById(R.id.password);
-		final AlertDialog dialog = new AlertDialog.Builder(this)
-				.setView(prompt)
-				.setTitle(question == null ? "password" : "question")
-				.setPositiveButton("ok", null)
-				.setNegativeButton("cancel", this).create();
-		dialog.show();
-		dialog.getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener(
-				new OnClickListener() {
-					@Override
-					public void onClick(View arg0) {
-						final String passwordText = password.getText()
-								.toString();
-						final MessageDigest md;
-						try {
-							md = MessageDigest.getInstance("SHA-1");
-						} catch (NoSuchAlgorithmException e) {
-							e.printStackTrace();
-							finish();
-							return;
-						}
-						md.update("NSGbUvrdqwqHYFAQ".getBytes());
-						final byte[] digest = md.digest(passwordText.getBytes());
-						for (int i = 0; i < digest.length; i++)
-							if (Integer.parseInt(
-									hash.substring(2 * i, 2 * (i + 1)), 16) != (0xff & digest[i])) {
-								Toast.makeText(MainActivity.this,
-										"bad password", Toast.LENGTH_SHORT)
-										.show();
-								return;
-							}
-						fetchSeed(type, key, passwordText);
-						dialog.dismiss();
-					}
-				});
 	}
 
 	String encodeURIComponent(String component) {
