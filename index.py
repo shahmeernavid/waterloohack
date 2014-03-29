@@ -14,7 +14,7 @@ def distance(lat1, lon1, lat2, lon2):
 	lat1*=math.pi/180
 	lon1*=math.pi/180
 	lat2*=math.pi/180
-	lon1*=math.pi/180
+	lon2*=math.pi/180
 	return(2*6372800)*math.asin(math.sqrt(math.sin((lat2-lat1)*.5)**2+math.cos(lat1)*math.cos(lat2)*math.sin((lon2-lon1)*.5)**2))
 def digest(password, salt=sha.new('NSGbUvrdqwqHYFAQ')):
 	hasher = salt.copy()
@@ -65,6 +65,8 @@ class Api(object):
 	@cherrypy.tools.json_out()
 	def list(self, latitude, longitude, radius='inf'):
 		radius = float(radius)
+		latitude = float(latitude)
+		longitude = float(longitude)
 		ret = []
 		now = datetime.datetime.utcnow()
 		for obj_key, obj in copy.deepcopy(d.items()):
@@ -72,7 +74,7 @@ class Api(object):
 				continue
 			for field in 'expiration', 'created':
 				obj[field] = obj[field].isoformat()
-			obj['distance'] = distance(float(latitude), float(longitude), obj['latitude'], obj['longitude'])
+			obj['distance'] = distance(latitude, longitude, obj['latitude'], obj['longitude'])
 			obj['key'] = obj_key[4:]
 			del obj['contents']
 			if obj['distance'] <= radius:

@@ -57,7 +57,7 @@ public class MainActivity extends Activity implements LocationListener,
 	static {
 		URL u = null;
 		try {
-			u = new URL("http://linux024.student.cs.uwaterloo.ca:40080/");
+			u = new URL("http://caffeine.csclub.uwaterloo.ca:40080/");
 		} catch (MalformedURLException e) {
 			e.printStackTrace();
 			assert false;
