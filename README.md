@@ -57,7 +57,7 @@ following fields:
 
 * **created**: the date that the item was created, in ISO format (YYYY-MM-DDTHH:MM:SS.mmmmmm)
 
-* **distance**: the distance between the coordinate at `(latitude, longitude)` and the current item, in km
+* **distance**: the distance between the coordinate at `(latitude, longitude)` and the current item, in m
 
 * **key**: the object ID of the item
 
