@@ -21,6 +21,7 @@ import ch.boye.httpclientandroidlib.impl.client.CloseableHttpClient;
 import ch.boye.httpclientandroidlib.impl.client.DefaultHttpClient;
 import ch.boye.httpclientandroidlib.impl.client.HttpClientBuilder;
 import android.app.Activity;
+import android.app.ProgressDialog;
 import android.content.ContentResolver;
 import android.content.Intent;
 import android.location.Location;
@@ -43,9 +44,10 @@ public class PlantActivity extends Activity implements OnEditorActionListener,
 	TextView mTitle, mPassword, mQuestion;
 	Spinner mExpiration;
 	LocationManager mLocationManager;
-	double mLat, mLon;
+	double mLat = Double.NaN, mLon;
 	Button mPlant;
 	CloseableHttpClient mHttpClient;
+	private ProgressDialog mPd;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -127,12 +129,15 @@ public class PlantActivity extends Activity implements OnEditorActionListener,
 			if (mQuestion.getText().length() != 0)
 				builder.addTextBody("question", mQuestion.getText().toString());
 		}
-		final String name = uri
-				.getLastPathSegment();
+		final String name = uri.getLastPathSegment();
 		httppost.setEntity(builder.addPart(
 				"seed",
-				new InputStreamBody(is, ContentType.create(type!=null?type:"application/octet-stream"), name==null?uri.toString():name)).build());
+				new InputStreamBody(is, ContentType.create(type != null ? type
+						: "application/octet-stream"), name == null ? uri
+						.toString() : name)).build());
 		Log.v("SlingApp", "created post" + httppost);
+		mPd = ProgressDialog.show(this, "slinging", "uploading the file", true);
+		checkUpdated();
 		new Thread() {
 			@Override
 			public void run() {
@@ -141,12 +146,11 @@ public class PlantActivity extends Activity implements OnEditorActionListener,
 					chr = mHttpClient.execute(httppost);
 					if (chr.getStatusLine().getStatusCode() / 100 == 2)
 						runOnUiThread(PlantActivity.this);
+					return;
 				} catch (ClientProtocolException e) {
 					e.printStackTrace();
-					return;
 				} catch (IOException e) {
 					e.printStackTrace();
-					return;
 				} finally {
 					if (chr != null)
 						try {
@@ -155,6 +159,16 @@ public class PlantActivity extends Activity implements OnEditorActionListener,
 							e.printStackTrace();
 						}
 				}
+				runOnUiThread(new Runnable() {
+					@Override
+					public void run() {
+						if (mPd != null) {
+							mPd.dismiss();
+							mPd = null;
+						}
+						checkUpdated();
+					}
+				});
 			}
 		}.start();
 	}
@@ -163,7 +177,7 @@ public class PlantActivity extends Activity implements OnEditorActionListener,
 	public void onLocationChanged(Location location) {
 		mLat = location.getLatitude();
 		mLon = location.getLongitude();
-		mPlant.setEnabled(true);
+		checkUpdated();
 	}
 
 	@Override
@@ -184,7 +198,16 @@ public class PlantActivity extends Activity implements OnEditorActionListener,
 
 	@Override
 	public void run() {
+		if (mPd != null) {
+			mPd.dismiss();
+			mPd = null;
+		}
+		checkUpdated();
 		Toast.makeText(this, "success", Toast.LENGTH_LONG).show();
 		finish();
+	}
+
+	private void checkUpdated() {
+		mPlant.setEnabled(mLat == mLat && mPd == null);
 	}
 }

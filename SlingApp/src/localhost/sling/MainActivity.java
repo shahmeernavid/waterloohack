@@ -34,6 +34,7 @@ import android.os.Bundle;
 import android.app.ActionBar;
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -57,6 +58,7 @@ public class MainActivity extends Activity implements LocationListener,
 	static {
 		URL u = null;
 		try {
+			// u = new URL("http://linux024.student.cs.uwaterloo.ca:40080/");
 			u = new URL("http://caffeine.csclub.uwaterloo.ca:40080/");
 		} catch (MalformedURLException e) {
 			e.printStackTrace();
@@ -67,6 +69,7 @@ public class MainActivity extends Activity implements LocationListener,
 	ListView mSeedList;
 	LocationManager mLocationManager;
 	double mLat, mLon;
+	private ProgressDialog mPd;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -226,9 +229,10 @@ public class MainActivity extends Activity implements LocationListener,
 						.setText(humanizeMillis(timedelta(
 								obj.optString("expiration"), now)));
 				((TextView) convertView.findViewById(R.id.distance))
-				.setText(String.valueOf((int)Math.ceil(obj.optDouble("distance"))));
-				((TextView) convertView.findViewById(R.id.hits))
-				.setText(String.valueOf(obj.optInt("hits")));
+						.setText(String.valueOf((int) Math.ceil(obj
+								.optDouble("distance"))));
+				((TextView) convertView.findViewById(R.id.hits)).setText(String
+						.valueOf(obj.optInt("hits")));
 				convertView.setTag(obj);
 				return convertView;
 			}
@@ -360,6 +364,8 @@ public class MainActivity extends Activity implements LocationListener,
 
 		String ext = MimeTypeMap.getSingleton().getExtensionFromMimeType(type);
 		final String basename = ext == null ? key : key + "." + ext;
+		final ProgressDialog pd = ProgressDialog.show(this, "downloading",
+				"please wait for the file", true);
 		new Thread() {
 			public void run() {
 				HttpClient httpclient = new DefaultHttpClient();
@@ -413,6 +419,7 @@ public class MainActivity extends Activity implements LocationListener,
 
 						@Override
 						public void run() {
+							pd.dismiss();
 							try {
 								final Uri uri = Uri.fromFile(outputFile);
 								startActivity(new Intent(Intent.ACTION_VIEW)
