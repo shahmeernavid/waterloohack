@@ -10,8 +10,12 @@ import sha
 import io
 import copy
 def distance(lat1, lon1, lat2, lon2):
-	'returns distance divided by diameter of earth, assuming sphere'
-	return math.asin(math.sqrt(math.sin((lat2-lat1)*.5)**2+math.cos(lat1)*math.cos(lat2)*math.sin((lon2-lon1)*.5)**2))
+	'returns distance in meters, assuming sphere'
+	lat1*=math.pi/180
+	lon1*=math.pi/180
+	lat2*=math.pi/180
+	lon1*=math.pi/180
+	return(2*6372800)*math.asin(math.sqrt(math.sin((lat2-lat1)*.5)**2+math.cos(lat1)*math.cos(lat2)*math.sin((lon2-lon1)*.5)**2))
 def digest(password, salt=sha.new('NSGbUvrdqwqHYFAQ')):
 	hasher = salt.copy()
 	hasher.update(password)
@@ -60,7 +64,8 @@ class Api(object):
 		for obj_key, obj in copy.deepcopy(d.items()):
 			if obj['expiration'] < now:
 				continue
-			obj['expiration'] = obj['expiration'].isoformat()
+			for field in 'expiration', 'created':
+				obj[field] = obj[field].isoformat()
 			obj['distance'] = distance(float(latitude), float(longitude), obj['latitude'], obj['longitude'])
 			obj['key'] = obj_key[4:]
 			del obj['contents']
