@@ -1,0 +1,22 @@
+<div data-options="dxView : { name: 'home', title: 'Home' } " >
+    <div data-options="dxContent: {  targetPlaceholder: 'content'}">
+
+        <div data-bind="dxList: { dataSource: listDataSource, grouped: false, autoPagingEnabled: true, 	itemClickAction: viewFile}"> 
+
+        	<div class="listItem" data-options="dxTemplate:{ name:'item' }"  >
+			  		
+				    <div style="display:inline-block; margin: 5px;">
+				    	<p data-bind="html: title"></p>
+				    	<p data-bind="html: created"></p>
+				    	<p data-bind="html: distance"></p> 
+				    </div>
+			 </div>
+        </div>
+
+
+        <!---<div class="bottom fixed button" data-bind="dxButton:{text:'Plant File', clickAction:openCamera}"></div>-->
+        
+    </div>
+
+    <div data-bind="dxCommand: { id: 'addFile', action:showAdd}"></div>	
+</div>
