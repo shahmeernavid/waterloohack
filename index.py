@@ -110,7 +110,7 @@ if __name__=='__main__':
 			},
 		}
 		#cherrypy.engine.timeout_monitor.unsubscribe()
-		#cherrypy.engine.autoreload.unsubscribe()
+		cherrypy.engine.autoreload.unsubscribe()
 		cherrypy.quickstart(Api(), config=config)
 	finally:
 		d.close()
